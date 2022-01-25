@@ -49,6 +49,34 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0087290F27724A7E00C5BDBF /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				005EABA5276393ED00A08300 /* hope.mp3 */,
+				005EABA7276399C300A08300 /* explosion.wav */,
+				0087290D2771FD4B00C5BDBF /* laser.wav */,
+			);
+			path = Sounds;
+			sourceTree = "<group>";
+		};
+		0087291027724A9000C5BDBF /* Emmitters */ = {
+			isa = PBXGroup;
+			children = (
+				008CF6B22745916D004A2D53 /* Explosion.sks */,
+				008CF6B427459261004A2D53 /* Starfield.sks */,
+			);
+			path = Emmitters;
+			sourceTree = "<group>";
+		};
+		0087291127724ABB00C5BDBF /* Game */ = {
+			isa = PBXGroup;
+			children = (
+				008CF69F274589BC004A2D53 /* GameScene.sks */,
+				008CF6A3274589BC004A2D53 /* GameScene.swift */,
+			);
+			path = Game;
+			sourceTree = "<group>";
+		};
 		008CF691274589BC004A2D53 = {
 			isa = PBXGroup;
 			children = (
@@ -69,16 +97,12 @@
 			isa = PBXGroup;
 			children = (
 				008CF69D274589BC004A2D53 /* AppDelegate.swift */,
-				008CF69F274589BC004A2D53 /* GameScene.sks */,
-				008CF6A1274589BC004A2D53 /* Actions.sks */,
-				008CF6A3274589BC004A2D53 /* GameScene.swift */,
-				005EABA5276393ED00A08300 /* hope.mp3 */,
-				005EABA7276399C300A08300 /* explosion.wav */,
-				0087290D2771FD4B00C5BDBF /* laser.wav */,
-				008CF6B22745916D004A2D53 /* Explosion.sks */,
-				008CF6B427459261004A2D53 /* Starfield.sks */,
 				008CF6A5274589BC004A2D53 /* GameViewController.swift */,
+				008CF6A1274589BC004A2D53 /* Actions.sks */,
 				008CF6A7274589BC004A2D53 /* Main.storyboard */,
+				0087291127724ABB00C5BDBF /* Game */,
+				0087290F27724A7E00C5BDBF /* Sounds */,
+				0087291027724A9000C5BDBF /* Emmitters */,
 				008CF6AA274589BD004A2D53 /* Assets.xcassets */,
 				008CF6AC274589BD004A2D53 /* Info.plist */,
 			);
