@@ -18,6 +18,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     //Player Image
     let player = SKSpriteNode(imageNamed: "Player.png")
     
+    
+    var bossHealth = 5
+    
     //Score Label
     var scoreLabel:SKLabelNode!
     var score:Int = 0 {
@@ -35,13 +38,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     //Array for differnet enemy ships
     var enemyArray = ["Enemy1"]
     
+    //Array for Powerups
+    var powerUpArray = ["shieldPickUp"]
+    
     //For collision
     let playerCategory:UInt32 = 0x1 << 1
     let playerLaserCategory:UInt32 = 0x1 << 2
-    let astroidCategory:UInt32 = 0x1 << 3
-    let enemyCategory:UInt32 = 0x1 << 4
+    let shieldPickupCategory:UInt32 = 0x1 << 3
+    let astroidCategory:UInt32 = 0x1 << 4
+    let enemyCategory:UInt32 = 0x1 << 5
+    let bossCategory:UInt32 = 0x1 << 6
   
-    
     //Moving player with Accelometer
     let motionManager = CMMotionManager()
     var xAcceleration:CGFloat = 0
@@ -56,6 +63,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //Call Lives method
         addLives()
+        
+        //Call AddBoss method
+        //addBoss()
         
         //Create and position background
         let background = SKSpriteNode(imageNamed: "Space_BG_01.png")
@@ -76,13 +86,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addChild(player)
         
         //Player Physics for collision
-        //player.physicsBody = SKPhysicsBody(rectangleOf: player.size)
-        player.physicsBody = SKPhysicsBody(texture: player.texture!, size: player.size)
+        player.physicsBody = SKPhysicsBody(rectangleOf: player.size)
+        //player.physicsBody = SKPhysicsBody(texture: player.texture!, size: player.size)
         player.physicsBody?.isDynamic = true
         
         player.physicsBody?.categoryBitMask = playerCategory
-        player.physicsBody?.contactTestBitMask = astroidCategory | enemyCategory
-        //player.physicsBody?.collisionBitMask = astroidCategory | enemyCategory
+        player.physicsBody?.contactTestBitMask = astroidCategory | enemyCategory | bossCategory | shieldPickupCategory
+        //avoid any unwanted collisions
+        player.physicsBody?.collisionBitMask = 0
         
         //Physics for World
         self.physicsWorld.gravity = CGVector(dx: 0, dy: 0)
@@ -98,10 +109,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addChild(scoreLabel)
         
         //Timer to spawn astroids
-        gameTimer = Timer.scheduledTimer(timeInterval: 0.75, target: self, selector: #selector(addAstroid), userInfo: nil, repeats: true)
+        gameTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(addAstroid), userInfo: nil, repeats: true)
         
         //Timer to spawn enemy
-        gameTimer = Timer.scheduledTimer(timeInterval: 0.75, target: self, selector: #selector(addEnemy), userInfo: nil, repeats: true)
+        gameTimer = Timer.scheduledTimer(timeInterval: 0.85, target: self, selector: #selector(addEnemy), userInfo: nil, repeats: true)
+        
+        //Timer to spawn powerups
+        gameTimer = Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(addPowerUps), userInfo: nil, repeats: true)
+        
+        //Timer to spawn Boss
+        gameTimer = Timer.scheduledTimer(timeInterval: 30.0, target: self, selector: #selector(addBoss), userInfo: nil, repeats: false)
         
         //Using Accelometer for movement
         motionManager.accelerometerUpdateInterval = 0.2
@@ -127,6 +144,42 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    func addPowerUps() {
+        
+        //powerUpArray = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: powerUpArray) as! [String]
+        
+        let shieldPickUp = SKSpriteNode(imageNamed: "Shield.png")
+        
+        //GameplayKit randomization services to spawn different astroids
+        let randomPowerUpPosition = GKRandomDistribution(lowestValue: -350, highestValue: 350)
+        //Randomly spawn astroid in differnet positions
+        let position = CGFloat(randomPowerUpPosition.nextInt())
+        shieldPickUp.position = CGPoint(x: position, y: self.frame.size.height + shieldPickUp.size.height)
+        
+        shieldPickUp.zPosition = 1
+        
+        //addChild(shieldPickUp)
+        
+        //Astroid Physics for collision
+        shieldPickUp.physicsBody = SKPhysicsBody(circleOfRadius: shieldPickUp.size.width / 2)
+        shieldPickUp.physicsBody?.isDynamic = true
+        
+        shieldPickUp.physicsBody?.categoryBitMask = shieldPickupCategory
+        shieldPickUp.physicsBody?.contactTestBitMask = playerCategory
+        //avoid any unwanted collisions
+        shieldPickUp.physicsBody?.collisionBitMask = 0
+        
+        //Shield Pickup speed
+        let animationDuration:TimeInterval = 6
+        
+        //Clean up, remove astroids once reached a certain distince
+        var actionArray = [SKAction]()
+        actionArray.append(SKAction.move(to: CGPoint(x: position, y: -700), duration: animationDuration))
+        actionArray.append(SKAction.removeFromParent())
+        
+        shieldPickUp.run(SKAction.sequence(actionArray))
+    }
+    
     func addAstroid() {
         
         astroidArray = GKRandomSource.sharedRandom().arrayByShufflingObjects(in: astroidArray) as! [String]
@@ -144,11 +197,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //Astroid Physics for collision
         astroid.physicsBody = SKPhysicsBody(circleOfRadius: astroid.size.width / 2)
+        //astroid.physicsBody = SKPhysicsBody(texture: astroid.texture!, size: astroid.size)
         astroid.physicsBody?.isDynamic = true
         
         astroid.physicsBody?.categoryBitMask = astroidCategory
         astroid.physicsBody?.contactTestBitMask = playerLaserCategory | playerCategory
-        //astroid.physicsBody?.collisionBitMask = playerLaserCategory | playerCategory
+        //avoid any unwanted collisions
+        astroid.physicsBody?.collisionBitMask = 0
         
         addChild(astroid)
         
@@ -184,8 +239,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         enemy.physicsBody?.categoryBitMask = enemyCategory
         enemy.physicsBody?.contactTestBitMask = playerLaserCategory | playerCategory
-        //enemy.physicsBody?.collisionBitMask = playerLaserCategory | playerCategory
+        //avoid any unwanted collisions
+        enemy.physicsBody?.collisionBitMask = 0
        
+        
         if score >= 20 {
          addChild(enemy)
         }
@@ -199,6 +256,35 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         actionArray.append(SKAction.removeFromParent())
         
         enemy.run(SKAction.sequence(actionArray))
+    }
+    
+    func addBoss() {
+        
+        //Boss Image
+        let boss = SKSpriteNode(imageNamed: "BossA.png")
+        
+        boss.position.y = 600
+        boss.zPosition = 1
+        addChild(boss)
+    
+        //BossPhysics for collision
+        boss.physicsBody = SKPhysicsBody(circleOfRadius: boss.size.width / 2)
+        boss.physicsBody?.isDynamic = true
+        
+        boss.physicsBody?.categoryBitMask = bossCategory
+        boss.physicsBody?.contactTestBitMask = playerLaserCategory | playerCategory
+        //avoid any unwanted collisions
+        boss.physicsBody?.collisionBitMask = 0
+        
+        //boss speed
+        let animationDuration:TimeInterval = 10
+        
+        //Clean up, remove boss once reached a certain distince
+        var actionArray = [SKAction]()
+        actionArray.append(SKAction.move(to: CGPoint(x: 0, y: -700), duration: animationDuration))
+        actionArray.append(SKAction.removeFromParent())
+        
+        boss.run(SKAction.sequence(actionArray))
     }
     
     func fireLaser() {
@@ -217,7 +303,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         playerLaser.physicsBody?.categoryBitMask = playerLaserCategory
         playerLaser.physicsBody?.contactTestBitMask = astroidCategory | enemyCategory
-        //playerLaser.physicsBody?.collisionBitMask = astroidCategory | enemyCategory
+        //avoid any unwanted collisions
+        playerLaser.physicsBody?.collisionBitMask = 0
         playerLaser.physicsBody?.usesPreciseCollisionDetection = true
         
         addChild(playerLaser)
@@ -248,24 +335,36 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //PlayerLaser is A and Astroid is B
         if (A.categoryBitMask & playerLaserCategory) != 0 && (B.categoryBitMask & astroidCategory) != 0 {
-            playerLaserDidCollide(laserNode: A.node as! SKSpriteNode, astroidNode: B.node as! SKSpriteNode)
+            playerLaserHitAstroid(laserNode: A.node as! SKSpriteNode, astroidNode: B.node as! SKSpriteNode)
         }
-        
+        //PlayerLaser is A and Enemy is B
         else if (A.categoryBitMask & playerLaserCategory) != 0 && (B.categoryBitMask & enemyCategory) != 0 {
             playerLaserHitEnemy(laserNode: A.node as! SKSpriteNode, enemyNode: B.node as! SKSpriteNode)
         }
-        
-        else if (A.categoryBitMask & playerCategory) != 0 && (B.categoryBitMask & astroidCategory) != 0 {
-            playerHit(playerNode: A.node as! SKSpriteNode, astroidNode: B.node as! SKSpriteNode)
+        //PlayerLaser is A and Boss is B
+        else if (A.categoryBitMask & playerLaserCategory) != 0 && (B.categoryBitMask & bossCategory) != 0 {
+            playerLaserHitBoss(laserNode: A.node as! SKSpriteNode, bossNode: B.node as! SKSpriteNode)
         }
-        
+        //Player is A and Shield Pickup is B
+        else if (A.categoryBitMask & playerCategory) != 0 && (B.categoryBitMask & shieldPickupCategory) != 0 {
+            playerHitShieldPickup(playerNode: A.node as! SKSpriteNode, shieldPickupNode: B.node as! SKSpriteNode)
+        }
+        //Player is A and Astroid is B
+        else if (A.categoryBitMask & playerCategory) != 0 && (B.categoryBitMask & astroidCategory) != 0 {
+            playerHitAstroid(playerNode: A.node as! SKSpriteNode, astroidNode: B.node as! SKSpriteNode)
+        }
+        //Player is A and Enemy is B
         else if (A.categoryBitMask & playerCategory) != 0 && (B.categoryBitMask & enemyCategory) != 0 {
-            playerHitB(playerNode: A.node as! SKSpriteNode, enemyNode: B.node as! SKSpriteNode)
+            playerHitEnemy(playerNode: A.node as! SKSpriteNode, enemyNode: B.node as! SKSpriteNode)
+        }
+        //Player is A and Boss is B
+        else if (A.categoryBitMask & playerCategory) != 0 && (B.categoryBitMask & bossCategory) != 0 {
+            playerHitBoss(playerNode: A.node as! SKSpriteNode, bossNode: B.node as! SKSpriteNode)
         }
     }
     
-    //Function for playerLaser to destroy what it hits
-    func playerLaserDidCollide (laserNode:SKSpriteNode, astroidNode:SKSpriteNode) {
+    //Function for playerLaser to destroy Astroid
+    func playerLaserHitAstroid (laserNode:SKSpriteNode, astroidNode:SKSpriteNode) {
         
         //Create explosion effect
         let explosion = SKEmitterNode(fileNamed: "Explosion")!
@@ -283,12 +382,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.run(SKAction.wait(forDuration: 2)) {
             explosion.removeFromParent()
         }
+        print("laser hit astroid")
         
         //Add score
         score += 5
     }
     
-    //Function for playerLaser to destroy what it hits
+    //Function for playerLaser to destroy Enemy
     func playerLaserHitEnemy (laserNode:SKSpriteNode, enemyNode:SKSpriteNode) {
         
         //Create explosion effect
@@ -307,24 +407,80 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.run(SKAction.wait(forDuration: 2)) {
             explosion.removeFromParent()
         }
+        print("laser hit enemy")
         
         //Add score
         score += 10
     }
     
+    //Function for playerLaser to destroy Boss
+    func playerLaserHitBoss (laserNode:SKSpriteNode, bossNode:SKSpriteNode) {
+        
+        //Create explosion effect
+        let explosion = SKEmitterNode(fileNamed: "Explosion")!
+        
+        explosion.position = bossNode.position
+        addChild(explosion)
+        
+        
+        //Play explosion sound effect
+        self.run(SKAction.playSoundFileNamed("explosion.wav", waitForCompletion: false))
+        
+        //Remove sprites
+        laserNode.removeFromParent()
+        //bossNode.removeFromParent()
+        
+        if bossHealth > 1 {
+            //Remove Boss Health
+            bossHealth = bossHealth - 1
+        }
+        else {
+            //Remove Sprite
+            bossNode.removeFromParent()
+            //Add score
+            score += 15
+            
+            let transition = SKTransition.flipHorizontal(withDuration: 0.5)
+            let winGame = WinScene(fileNamed: "WinScene")!
+            winGame.score = self.score
+            winGame.scaleMode = scaleMode
+            self.view?.presentScene(winGame, transition: transition)
+        }
+        
+        //Remove explosion effect after a delay
+        self.run(SKAction.wait(forDuration: 2)) {
+            explosion.removeFromParent()
+        }
+        print("laser hit boss")
+        print(bossHealth)
+        
+        
+    }
     
-    func playerHit(playerNode:SKSpriteNode, astroidNode:SKSpriteNode) {
+    //Function for when player and Shield Pickup collide
+    func playerHitShieldPickup (playerNode:SKSpriteNode, shieldPickupNode:SKSpriteNode) {
+        
+        let shield = SKSpriteNode(imageNamed: "ShieldActive")
+        shield.position = playerNode.position
+        shield.zPosition = 2
+        //addChild(shield)
+        shieldPickupNode.removeFromParent()
+    }
+    
+    //Function for when player and astroid collide
+    func playerHitAstroid(playerNode:SKSpriteNode, astroidNode:SKSpriteNode) {
         
         let explosionA = SKEmitterNode(fileNamed: "Explosion")!
         explosionA.position = astroidNode.position
         explosionA.zPosition = 3
         addChild(explosionA)
         
-        let explosionB = SKEmitterNode(fileNamed: "Explosion")!
-        explosionB.position = playerNode.position
-        explosionB.zPosition = 3
-        addChild(explosionB)
+        print("Player hit astroid")
         
+//        let explosionB = SKEmitterNode(fileNamed: "Explosion")!
+//        explosionB.position = playerNode.position
+//        explosionB.zPosition = 3
+//        addChild(explosionB)
         
         //Play explosion sound effect
         self.run(SKAction.playSoundFileNamed("explosion.wav", waitForCompletion: false))
@@ -333,13 +489,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //playerNode.removeFromParent()
         astroidNode.removeFromParent()
         
-        
-        
-        
         //Remove explosion effect after a delay
         self.run(SKAction.wait(forDuration: 2)) {
             explosionA.removeFromParent()
-            explosionB.removeFromParent()
+            //explosionB.removeFromParent()
         }
         
         //Removes a life when hit
@@ -352,24 +505,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //Remove player when all lives are gone
         if livesArray.count == 0 {
             playerNode.removeFromParent()
+            let transition = SKTransition.flipHorizontal(withDuration: 0.5)
+            let gameOver = GameOverScene(fileNamed: "GameOverScene")!
+            gameOver.score = self.score
+            gameOver.scaleMode = scaleMode
+            self.view?.presentScene(gameOver, transition: transition)
         }
-        
     }
     
-    func playerHitB(playerNode:SKSpriteNode, enemyNode:SKSpriteNode) {
+    //Function for when player and enemy collide
+    func playerHitEnemy(playerNode:SKSpriteNode, enemyNode:SKSpriteNode) {
         
         let explosionA = SKEmitterNode(fileNamed: "Explosion")!
         explosionA.position = enemyNode.position
         explosionA.zPosition = 3
         addChild(explosionA)
         
-        let explosionB = SKEmitterNode(fileNamed: "Explosion")!
-        explosionB.position = playerNode.position
-        explosionB.zPosition = 3
-        addChild(explosionB)
+        print("Player hit enemy")
+        
+//        let explosionB = SKEmitterNode(fileNamed: "Explosion")!
+//        explosionB.position = playerNode.position
+//        explosionB.zPosition = 3
+//        addChild(explosionB)
     
-        
-        
         //Play explosion sound effect
         self.run(SKAction.playSoundFileNamed("explosion.wav", waitForCompletion: false))
         
@@ -380,7 +538,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //Remove explosion effect after a delay
         self.run(SKAction.wait(forDuration: 2)) {
             explosionA.removeFromParent()
-            explosionB.removeFromParent()
+            //explosionB.removeFromParent()
         }
         
         //Removes a life when hit
@@ -393,8 +551,48 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //Remove player when all lives are gone
         if livesArray.count == 0 {
             playerNode.removeFromParent()
+            let transition = SKTransition.flipHorizontal(withDuration: 0.5)
+            let gameOver = GameOverScene(fileNamed: "GameOverScene")!
+            gameOver.score = self.score
+            gameOver.scaleMode = scaleMode
+            self.view?.presentScene(gameOver, transition: transition)
         }
         
+    }
+    
+    //Function for when player and boss collide
+    func playerHitBoss(playerNode:SKSpriteNode, bossNode:SKSpriteNode) {
+        
+        let explosionA = SKEmitterNode(fileNamed: "Explosion")!
+        explosionA.position = bossNode.position
+        explosionA.zPosition = 3
+        addChild(explosionA)
+        
+        print("Player hit boss")
+        
+        let explosionB = SKEmitterNode(fileNamed: "Explosion")!
+        explosionB.position = playerNode.position
+        explosionB.zPosition = 3
+        addChild(explosionB)
+    
+        //Play explosion sound effect
+        self.run(SKAction.playSoundFileNamed("explosion.wav", waitForCompletion: false))
+        
+        //remove sprites
+        playerNode.removeFromParent()
+        bossNode.removeFromParent()
+        
+        //Remove explosion effect after a delay
+        self.run(SKAction.wait(forDuration: 2)) {
+            explosionA.removeFromParent()
+            explosionB.removeFromParent()
+        }
+        
+        let transition = SKTransition.flipHorizontal(withDuration: 0.5)
+        let gameOver = GameOverScene(fileNamed: "GameOverScene")!
+        gameOver.score = self.score
+        gameOver.scaleMode = scaleMode
+        self.view?.presentScene(gameOver, transition: transition)
     }
     
     //Movement using the Accelometer
