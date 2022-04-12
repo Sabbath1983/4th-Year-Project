@@ -25,6 +25,9 @@
 		008CF6AB274589BD004A2D53 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 008CF6AA274589BD004A2D53 /* Assets.xcassets */; };
 		008CF6B32745916E004A2D53 /* Explosion.sks in Resources */ = {isa = PBXBuildFile; fileRef = 008CF6B22745916D004A2D53 /* Explosion.sks */; };
 		008CF6B527459261004A2D53 /* Starfield.sks in Resources */ = {isa = PBXBuildFile; fileRef = 008CF6B427459261004A2D53 /* Starfield.sks */; };
+		0099960427DF7B14008AE233 /* MyUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0099960327DF7B14008AE233 /* MyUtils.swift */; };
+		00D76E1427F9F30D00902B3B /* powerUp.wav in Resources */ = {isa = PBXBuildFile; fileRef = 00D76E1327F9F30D00902B3B /* powerUp.wav */; };
+		00D76E1627F9F31700902B3B /* shield.wav in Resources */ = {isa = PBXBuildFile; fileRef = 00D76E1527F9F31700902B3B /* shield.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +51,9 @@
 		008CF6AC274589BD004A2D53 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		008CF6B22745916D004A2D53 /* Explosion.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Explosion.sks; sourceTree = "<group>"; };
 		008CF6B427459261004A2D53 /* Starfield.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Starfield.sks; sourceTree = "<group>"; };
+		0099960327DF7B14008AE233 /* MyUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyUtils.swift; sourceTree = "<group>"; };
+		00D76E1327F9F30D00902B3B /* powerUp.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = powerUp.wav; sourceTree = "<group>"; };
+		00D76E1527F9F31700902B3B /* shield.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = shield.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +70,8 @@
 		0087290F27724A7E00C5BDBF /* Sounds */ = {
 			isa = PBXGroup;
 			children = (
+				00D76E1527F9F31700902B3B /* shield.wav */,
+				00D76E1327F9F30D00902B3B /* powerUp.wav */,
 				005EABA5276393ED00A08300 /* hope.mp3 */,
 				005EABA7276399C300A08300 /* explosion.wav */,
 				0087290D2771FD4B00C5BDBF /* laser.wav */,
@@ -85,6 +93,7 @@
 			children = (
 				008CF69F274589BC004A2D53 /* GameScene.sks */,
 				008CF6A3274589BC004A2D53 /* GameScene.swift */,
+				0099960327DF7B14008AE233 /* MyUtils.swift */,
 				0081A1EF27B2D8F6005C35B3 /* GameOverScene.sks */,
 				0036FE2C27C7D68200C020E0 /* WinScene.sks */,
 				0081A1F127B2DB26005C35B3 /* GameOverScene.swift */,
@@ -185,6 +194,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				008CF6B527459261004A2D53 /* Starfield.sks in Resources */,
+				00D76E1627F9F31700902B3B /* shield.wav in Resources */,
 				008CF6A9274589BC004A2D53 /* Main.storyboard in Resources */,
 				0087290E2771FD4B00C5BDBF /* laser.wav in Resources */,
 				0036FE2D27C7D68200C020E0 /* WinScene.sks in Resources */,
@@ -194,6 +204,7 @@
 				008CF6A0274589BC004A2D53 /* GameScene.sks in Resources */,
 				008CF6B32745916E004A2D53 /* Explosion.sks in Resources */,
 				008CF6AB274589BD004A2D53 /* Assets.xcassets in Resources */,
+				00D76E1427F9F30D00902B3B /* powerUp.wav in Resources */,
 				0081A1F027B2D8F6005C35B3 /* GameOverScene.sks in Resources */,
 				008CF6A2274589BC004A2D53 /* Actions.sks in Resources */,
 			);
@@ -211,6 +222,7 @@
 				005D137D27A9D00500605264 /* MenuScene.swift in Sources */,
 				0036FE2F27C7D73F00C020E0 /* WinScene.swift in Sources */,
 				008CF6A6274589BC004A2D53 /* GameViewController.swift in Sources */,
+				0099960427DF7B14008AE233 /* MyUtils.swift in Sources */,
 				008CF69E274589BC004A2D53 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
