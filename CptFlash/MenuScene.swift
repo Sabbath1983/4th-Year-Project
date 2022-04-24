@@ -21,6 +21,8 @@ class MenuScene: SKScene {
         mmStarfield.advanceSimulationTime(10)
         
         newGameButtonNode = self.childNode(withName: "newGameButton") as! SKSpriteNode
+        
+        //highScoresButtonNode = self.childNode(withName: "highScoresButton") as! SKSpriteNode
     
     }
     
@@ -37,6 +39,10 @@ class MenuScene: SKScene {
                 let transition = SKTransition.flipHorizontal(withDuration: 0.5)
                 gameScene.scaleMode = scaleMode
                 self.view?.presentScene(gameScene, transition: transition)
+            }
+            
+            if nodesArray.first?.name == "highScoresButton" {
+                //GameKitHelper.sharedInstance.showGKGameCenterViewController(viewController: self)
             }
         }
     }
