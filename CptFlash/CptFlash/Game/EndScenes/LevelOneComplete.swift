@@ -12,13 +12,13 @@ class LevelOneComplete: SKScene {
     var score:Int = 0
     
     var scoreLabel:SKLabelNode!
-    var continueButtonNode:SKSpriteNode!
+    var continueButtonNode1:SKSpriteNode!
     
     override func didMove(to view: SKView) {
         scoreLabel = self.childNode(withName: "scoreLabel") as! SKLabelNode
         scoreLabel.text = "\(score)"
         
-        continueButtonNode = self.childNode(withName: "continueButton") as! SKSpriteNode
+        continueButtonNode1 = self.childNode(withName: "continueButton1") as! SKSpriteNode
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -28,9 +28,9 @@ class LevelOneComplete: SKScene {
         if let location = touch?.location(in: self) {
             let nodesArray = self.nodes(at: location)
             
-            if nodesArray.first?.name == "continueButton" {
-                //let gameScene = GameScene(size: self.size)
-                let nextScene = GameScene(fileNamed: "GameSceneOne")!
+            if nodesArray.first?.name == "continueButton1" {
+                
+                let nextScene = IntroScene1(fileNamed: "IntroScene1")!
                 let transition = SKTransition.flipHorizontal(withDuration: 0.5)
                 nextScene.scaleMode = scaleMode
                 self.view?.presentScene(nextScene, transition: transition)

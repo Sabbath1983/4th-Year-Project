@@ -34,7 +34,7 @@ class GameOverScene: SKScene {
             let nodesArray = self.nodes(at: location)
             
             if nodesArray.first?.name == "newGameButton" {
-                //let gameScene = GameScene(size: self.size)
+    
                 let gameScene = GameScene(fileNamed: "GameScene")!
                 let transition = SKTransition.flipHorizontal(withDuration: 0.5)
                 gameScene.scaleMode = scaleMode
@@ -42,17 +42,8 @@ class GameOverScene: SKScene {
             }
             
             if nodesArray.first?.name == "menuButton" {
-//                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-//                let vc = storyboard.instantiateViewController(withIdentifier :"MainMenuViewController")
-//                self.view?.window?.rootViewController?.present(vc, animated: true, completion: nil)
-//                self.view?.presentScene(nil)
-                
-                //self.view!.window!.rootViewController!.performSegue(withIdentifier: "goMainMenu", sender: self)
+
                 GameOverScene.viewController?.performSegue(withIdentifier: "goMainMenu", sender: self)
-                
-//                var vc: UIViewController = UIViewController()
-//                vc = self.view!.window!.rootViewController!
-//                viewController?.performSegue(withIdentifier: "goMainMenu", sender: vc)
             }
         }
     }
