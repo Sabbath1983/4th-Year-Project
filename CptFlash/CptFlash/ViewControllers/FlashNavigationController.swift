@@ -3,7 +3,8 @@
 //  CptFlash
 //
 //  Created by James Murphy on 14/04/2022.
-//
+//  NavigationController to handle Game Center Authenication
+
 
 import UIKit
 

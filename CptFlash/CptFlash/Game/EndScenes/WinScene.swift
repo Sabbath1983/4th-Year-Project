@@ -33,7 +33,7 @@ class WinScene: SKScene {
             let nodesArray = self.nodes(at: location)
             
             if nodesArray.first?.name == "newGameButton" {
-                //let gameScene = GameScene(size: self.size)
+                
                 let gameScene = GameScene(fileNamed: "GameScene")!
                 let transition = SKTransition.flipHorizontal(withDuration: 0.5)
                 gameScene.scaleMode = scaleMode
@@ -41,10 +41,6 @@ class WinScene: SKScene {
             }
             
             if nodesArray.first?.name == "menuButton" {
-//                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-//                let viewController = storyboard.instantiateViewController(withIdentifier :"MainMenuViewController")
-//                self.view?.window?.rootViewController?.present(viewController, animated: true, completion: nil)
-//                self.view?.presentScene(nil)
                 
                 WinScene.viewController?.performSegue(withIdentifier: "goMainMenu", sender: self)
             }
